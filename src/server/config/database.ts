@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
+import { Config } from '../../config/Config';
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb+srv://ahorval0501:Al3jandro15@studentmanagement.mj0zi.mongodb.net/');
+    await mongoose.connect(Config.databaseURL);
     console.log('MongoDB conectado correctamente');
   } catch (error) {
     console.error('Error conectando a MongoDB:', error);

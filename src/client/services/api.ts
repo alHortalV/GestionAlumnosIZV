@@ -1,15 +1,14 @@
+import { Config } from "../../config/Config";
 import { Seat, Student } from "../types/types";
-
-const API_URL = 'http://192.168.1.102:3000/api';
 
 export const api = {
   async getSeats(): Promise<Seat[]> {
-    const response = await fetch(`${API_URL}/seats`);
+    const response = await fetch(`${Config.apiURL}/seats`);
     return response.json();
   },
 
   async getStudents(): Promise<Student[]> {
-    const response = await fetch(`${API_URL}/students`);
+    const response = await fetch(`${Config.apiURL}/students`);
     return response.json();
   },
 
@@ -18,7 +17,7 @@ export const api = {
     fromSeat: number, 
     toSeat: number 
   }) {
-    const response = await fetch(`${API_URL}/unauthorized-move`, {
+    const response = await fetch(`${Config.apiURL}/unauthorized-move`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
