@@ -1,118 +1,113 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { useState, useEffect } from "react";
+import { SafeAreaView, ActivityIndicator, Text, StyleSheet } from "react-native";
+import { io } from "socket.io-client";
+import { ClassroomGrid } from "./src/client/components/ClassroomGrid";
+import { api } from "./src/client/services/api";
+import { Seat, Student } from "./src/client/types/types";
+import { Config } from "./src/config/Config";
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [students, setStudents] = useState<Student[]>([]);
+  const [seats, setSeats] = useState<Seat[]>([]);
+  const [socket, setSocket] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  useEffect(() => {
+    const socketClient = io(Config.socketURL);
+    setSocket(socketClient);
+
+    socketClient.on('unauthorized-move', handleUnauthorizedMove);
+    socketClient.on('student-added', handleStudentAdded);
+
+    loadInitialData();
+
+    return () => {
+      socketClient.disconnect();
+    };
+  }, []);
+
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+      const [seatsData, studentsData] = await Promise.all([
+        api.getSeats(),
+        api.getStudents()
+      ]);
+
+      setSeats(seatsData);
+      setStudents(studentsData);
+      setError(null);
+    } catch (err) {
+      setError('Error cargando los datos. Por favor, intente más tarde.');
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleUnauthorizedMove = async (data: {
+    studentId: string,
+    fromSeat: number,
+    toSeat: number
+  }) => {
+    await loadInitialData();
+  };
+
+  const handleStudentAdded = (newStudent: Student) => {
+    setStudents(prev => [...prev, newStudent]);
+    loadInitialData();
+  };
+
+  const handleSeatPress = async (seatNumber: number) => {
+    const seat = seats.find(s => s.seatNumber === seatNumber);
+    if (!seat) return;
+
+    const student = students.find(s => s._id === seat.studentId);
+    if (student && student.assignedSeat !== seatNumber) {
+      try {
+        await api.reportUnauthorizedMove({
+          studentId: student._id,
+          fromSeat: student.currentSeat || student.assignedSeat,
+          toSeat: seatNumber
+        });
+      } catch (error) {
+        console.error('Error reporting unauthorized move:', error);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      {error ? (
+        <Text style={styles.error}>{error}</Text>
+      ) : (
+        <ClassroomGrid
+          seats={seats}
+          students={students}
+          onSeatPress={handleSeatPress}
+        />
+      )}
     </SafeAreaView>
   );
-}
-
+};
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    margin: 20,
   },
 });
-
 export default App;
