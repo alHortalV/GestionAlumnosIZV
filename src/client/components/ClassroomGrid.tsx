@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import SeatComponent from './SeatComponent';
 import { Seat, Student } from '../../client/types/types';
+import { classroomStyles as styles } from '../styles/classroomStyles';
 
 interface ClassroomGridProps {
   seats: Seat[];
@@ -9,33 +10,16 @@ interface ClassroomGridProps {
   onSeatPress: (seatId: number) => void;
 }
 
-export const ClassroomGrid: React.FC<ClassroomGridProps> = ({
-  seats,
-  students,
-  onSeatPress,
-}) => {
+export const ClassroomGrid: React.FC<ClassroomGridProps> = ({ seats, students, onSeatPress }) => {
   return (
     <View style={styles.grid}>
-      {seats.sort((a, b) => a.seatNumber - b.seatNumber).map((seat) => (
-        <SeatComponent
-          key={seat._id}
-          seat={seat}
-          student={students.find(s => s._id === seat.studentId)}
-          onPress={() => onSeatPress(seat.seatNumber)}
-        />
-      ))}
+      {seats
+        .sort((a, b) => a.seatNumber - b.seatNumber)
+        .map((seat) => (
+          <SeatComponent key={seat._id} seat={seat} student={students.find((s) => s._id === seat.studentId)} onPress={() => onSeatPress(seat.seatNumber)} />
+        ))}
     </View>
   );
 };
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-    },
-    grid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      padding: 10,
-    },
-  });
+
+export default ClassroomGrid;
