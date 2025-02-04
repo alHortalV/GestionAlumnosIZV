@@ -5,6 +5,7 @@ import cors from 'cors';
 import { connectDB } from './config/database';
 import Student from './models/Student';
 import Seat from './models/Seat';
+import router from './routes/auth';
 
 const app = express();
 const server = http.createServer(app);
@@ -21,6 +22,8 @@ app.use(express.json());
 
 // Conectar a MongoDB
 connectDB();
+
+app.use('/api/auth', router);
 
 // Inicializar asientos si no existen
 async function initializeSeats() {
