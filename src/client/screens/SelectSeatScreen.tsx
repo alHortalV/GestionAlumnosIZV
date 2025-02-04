@@ -1,8 +1,9 @@
 import { SafeAreaView, ActivityIndicator, Text, StyleSheet, ScrollView } from "react-native";
 import ClassroomGrid from "../components/ClassroomGrid";
 import { useClassroomData } from "../hooks/useLoadData";
+import { NavigationProp } from "@react-navigation/native";
 
-function SelectedSeatScreen(): React.JSX.Element {
+function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> }) {
     const { students, seats, loading, error, handleSeatPress } = useClassroomData();
 
     if (loading) {

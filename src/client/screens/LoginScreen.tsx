@@ -2,15 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { loginStyles as styles } from '../styles/loginStyles';
+import { ApiService } from '../services/apiService';
 
 const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        console.log('Nombre de usuario:', username);
-        console.log('Contraseña:', password);
-    };
+    const handleLogin = async () => {
+        try {
+          const response = await ApiService.login(username, password);
+          if (response.user) {
+            console.log("Inicio de sesión exitoso:", response.user);
+          return (
+           navigation.navigate("Home")
+          );
+          } else {
+            console.log("Error:", response.message);
+            return (
+                <View style={styles.container}>
+                    <Text style={styles.title}>Error de inicio de sesión</Text>
+                </View>
+            );
+          }
+        } catch (error) {
+          console.error("Error al iniciar sesión", error);
+        }
+      };
 
     return (
         <View style={styles.container}>
