@@ -13,4 +13,11 @@ export class ApiService {
   static async reportUnauthorizedMove(studentId: string, fromSeat: number, toSeat: number): Promise<void> {
     await api.reportUnauthorizedMove({ studentId, fromSeat, toSeat });
   }
+
+  static async login(username: string, password: string) {
+    return await api.login(username, password);
+  }
+  static async register(username: string, password: string) {
+    return await api.register(username, password);
+  }
 }
