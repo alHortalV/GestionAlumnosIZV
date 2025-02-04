@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { loginStyles as styles } from '../styles/loginStyles';
+
 const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
