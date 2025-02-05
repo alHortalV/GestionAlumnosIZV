@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { registerStyles as styles } from '../styles/registerStyles';
 import { ApiService } from '../services/apiService';
@@ -13,18 +13,16 @@ const RegisterScreen = ({ navigation }: { navigation: NavigationProp<any> }) => 
     try {
       const response = await ApiService.register(username, password);
       if (response.user) {
-        console.log("Registro exitoso:", response.user);
-        return(
-          <View style={styles.container}>
-            <Text style={styles.title}>Registro exitoso</Text>
-          </View>
+        Alert.alert(
+          "Iniciar Sesión",
+          "Registro correcto. Inicia sesión para acceder",
+          [{ text: "OK", onPress: () => {} }]
         );
       } else {
-        console.log("Error:", response.message);
-        return (
-          <View style={styles.container}>
-            <Text style={styles.title}>Error al registrar</Text>
-          </View>
+        Alert.alert(
+          "Registro",
+          "Registro incorrecto",
+          [{ text: "OK", onPress: () => {} }]
         );
       }
     } catch (error) {

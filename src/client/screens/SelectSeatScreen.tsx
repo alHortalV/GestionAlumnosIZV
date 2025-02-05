@@ -23,7 +23,7 @@ function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> })
                     <ClassroomGrid
                         seats={seats}
                         students={students}
-                        onSeatPress={handleSeatPress}
+                        onSeatPress={(seatNumber) => handleSeatPress(seatNumber, navigation)}
                     />
                 </ScrollView>
             )}

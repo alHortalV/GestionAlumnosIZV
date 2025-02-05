@@ -20,7 +20,7 @@ export const SeatComponent: React.FC<SeatComponentProps> = ({ seat, student, onP
         style={[
           styles.seat,
           seat.isOccupied && styles.occupied,
-          student?.assignedSeat !== seat.seatNumber && styles.wrongSeat,
+          student?.currentSeat !== seat.seatNumber && styles.wrongSeat,
         ]}
         onPress={() => handlePress(seat.isOccupied, onPress)}
         disabled={loading}

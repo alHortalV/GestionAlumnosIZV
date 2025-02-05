@@ -64,37 +64,37 @@ app.get('/api/students', async (req, res) => {
 // Ruta para añadir un nuevo estudiante
 app.post('/api/students', async (req, res) => {
   try {
-    const { name, assignedSeat } = req.body;
-    const student = new Student({
-      name,
-      assignedSeat,
-      currentSeat: assignedSeat
-    });
-    await student.save();
+      const { name, assignedSeat } = req.body;
+      const student = new Student({
+          name,
+          assignedSeat,
+          currentSeat: assignedSeat
+      });
+      await student.save();
 
-    // Actualizar el asiento asignado
-    await Seat.findOneAndUpdate(
-      { seatNumber: assignedSeat },
-      { isOccupied: true, studentId: student._id }
-    );
+      // Actualizar el asiento asignado
+      await Seat.findOneAndUpdate(
+          { seatNumber: assignedSeat },
+          { isOccupied: true, studentId: student._id }
+      );
 
-    io.emit('student-added', student);
-    res.status(201).json(student);
+      io.emit('student-added', student);
+      res.status(201).json(student); // Devuelve el estudiante creado
   } catch (error) {
-    res.status(500).json({ message: 'Error añadiendo estudiante' });
+      res.status(500).json({ message: 'Error añadiendo estudiante' });
   }
 });
 
 // Ruta para registrar movimiento no autorizado
-app.post('/api/unauthorized-move', async (req, res) => {
+app.post('/api/authorized-move', async (req, res) => {
   try {
     const { studentId, fromSeat, toSeat } = req.body;
 
     // Actualizar la posición actual del estudiante
     const student = await Student.findByIdAndUpdate(
-      studentId,
-      { currentSeat: toSeat },
-      { new: true }
+      studentId,         // El ID del estudiante que queremos actualizar
+      { currentSeat: toSeat },  // El nuevo valor que queremos establecer
+      { new: true }      // Opción para devolver el documento actualizado
     );
 
     // Actualizar los asientos
@@ -109,7 +109,7 @@ app.post('/api/unauthorized-move', async (req, res) => {
       )
     ]);
 
-    io.emit('unauthorized-move', { studentId, fromSeat, toSeat });
+    io.emit('authorized-move', { studentId, fromSeat, toSeat });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ message: 'Error registrando movimiento' });

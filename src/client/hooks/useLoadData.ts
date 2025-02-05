@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { Config } from "../../config/Config";
 import { ApiService } from "../services/apiService";
 import { Seat, Student } from "../types/types";
+import { NavigationProp } from "@react-navigation/native";
 
 
 export const useClassroomData = () => {
@@ -14,7 +15,7 @@ export const useClassroomData = () => {
   useEffect(() => {
     const socketClient = io(Config.socketURL);
 
-    socketClient.on("unauthorized-move", handleUnauthorizedMove);
+    socketClient.on("authorized-move", handleUnauthorizedMove);
     socketClient.on("student-added", handleStudentAdded);
 
     loadInitialData();
@@ -50,19 +51,15 @@ export const useClassroomData = () => {
     loadInitialData();
   };
 
-  const handleSeatPress = async (seatNumber: number) => {
+  const handleSeatPress = (seatNumber: number, navigation: NavigationProp<any>) => {
     const seat = seats.find((s) => s.seatNumber === seatNumber);
     if (!seat) return;
 
     const student = students.find((s) => s._id === seat.studentId);
-    if (student && student.assignedSeat !== seatNumber) {
-      try {
-        await ApiService.reportUnauthorizedMove(student._id, student.currentSeat || student.assignedSeat, seatNumber);
-      } catch (error) {
-        console.error("Error reporting unauthorized move:", error);
-      }
-    }
-  };
+
+    navigation.navigate("Detalles", { seat, student });
+};
+
 
   return { students, seats, loading, error, handleSeatPress };
 };

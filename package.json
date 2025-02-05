@@ -11,9 +11,11 @@
     "dev": "tsx src/server/index.ts"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "@react-navigation/stack": "^6.4.1",
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "mongoose": "^8.9.6",
