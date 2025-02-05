@@ -1,6 +1,5 @@
 export interface Student {
   _id: string | undefined;
-  id: string;
   name: string;
   assignedSeat: number;
   currentSeat: number | null;

@@ -2,7 +2,6 @@ import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { Seat, Student } from '../../client/types/types';
 import { useSeat } from '../hooks/useSeat';
-import StudentInfoModal from './StudentInfoModal';
 import { seatStyles as styles } from '../styles/seatStyles';
 
 interface SeatComponentProps {
@@ -27,8 +26,6 @@ export const SeatComponent: React.FC<SeatComponentProps> = ({ seat, student, onP
       >
         {loading ? <ActivityIndicator size="small" color="#000" /> : <Text style={styles.text}>{`Asiento ${seat.seatNumber + 1}`}</Text>}
       </TouchableOpacity>
-
-      <StudentInfoModal visible={modalVisible} student={student} seatNumber={seat.seatNumber} onClose={() => setModalVisible(false)} />
     </>
   );
 };

@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { loginStyles as styles } from '../styles/loginStyles';
 import { ApiService } from '../services/apiService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [username, setUsername] = useState('');
@@ -12,23 +13,14 @@ const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
     try {
       const response = await ApiService.login(username, password);
       if (response.user) {
-        Alert.alert(
-          "Iniciar Sesión",
-          "Inicio de sesión correcto",
-          [{ text: "OK", onPress: () => navigation.navigate('Asientos') }]
-        );
-        return (
-          navigation.navigate("Asientos")
-        );
+        Alert.alert('Éxito', 'Inicio de sesión exitoso');
+        navigation.navigate('Asientos');
       } else {
-        Alert.alert(
-          "Iniciar Sesión",
-          "Inicio de sesión incorrecto",
-          [{ text: "OK", onPress: () => {} }]
-        );
+        Alert.alert('Error', response.message || 'Credenciales incorrectas');
       }
     } catch (error) {
-      console.error("Error al iniciar sesión", error);
+      Alert.alert('Error', 'Error al iniciar sesión. Inténtalo de nuevo.');
+      console.error('Error al iniciar sesión:', error);
     }
   };
 
