@@ -5,7 +5,7 @@ import { SafeAreaView, Text, Button, StyleSheet, View, Alert, TextInput } from "
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Config } from "../../config/Config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ApiService } from "../services/apiService";
 
 type SeatDetailScreenProps = {
     route: RouteProp<RootStackParamList, "Detalles">;
@@ -22,75 +22,84 @@ const SeatDetailScreen = ({ route, navigation }: SeatDetailScreenProps) => {
     // Cargar estado del asiento al abrir la pantalla
     useEffect(() => {
         const loadSeatData = async () => {
-            try {
-                const storedSeats = await AsyncStorage.getItem("occupiedSeats");
-                if (storedSeats) {
-                    const occupiedSeats = JSON.parse(storedSeats);
-                    if (occupiedSeats[seat.seatNumber]) {
-                        setStudent(occupiedSeats[seat.seatNumber]); // Restaurar estudiante asignado
-                        setSeat(prev => ({ ...prev, isOccupied: true })); // Marcar asiento como ocupado
-                    }
-                }
-            } catch (error) {
-                console.error("Error al cargar los datos del asiento:", error);
+          try {
+            // Recuperar los estudiantes desde el servidor
+            const students = await ApiService.fetchStudents();
+      
+            // Aquí verificamos si un estudiante está asignado a este asiento
+            const studentInSeat = students.find(student => student.currentSeat === seat.seatNumber);
+      
+            if (studentInSeat) {
+              // Si el asiento está ocupado, actualizamos el estado
+              setStudent(studentInSeat);
+              setSeat(prev => ({ ...prev, isOccupied: true }));
             }
+          } catch (error) {
+            console.error("Error al cargar los datos de los estudiantes:", error);
+          }
         };
+      
         loadSeatData();
-    }, []);
+      }, []);
+      
 
-    const handleOccupySeat = async () => {
+      const handleOccupySeat = async () => {
         if (!studentName.trim()) {
-            Alert.alert("Error", "Por favor, ingresa un nombre válido.");
-            return;
+          Alert.alert("Error", "Por favor, ingresa un nombre válido.");
+          return;
         }
-
+      
         try {
-            setIsLoading(true);
-
-            // Crear el estudiante con el nombre ingresado
-            const createStudentResponse = await axios.post(`${Config.apiURL}/students`, {
-                name: studentName,
-                assignedSeat: seat.seatNumber,
+          setIsLoading(true);
+      
+          // Crear el estudiante con el nombre ingresado
+          const createStudentResponse = await axios.post(`${Config.apiURL}/students`, {
+            name: studentName,
+            assignedSeat: seat.seatNumber,
+          });
+      
+          if (createStudentResponse.status === 201) {
+            const newStudent = createStudentResponse.data;
+      
+            // Actualizar el estudiante en el backend
+            await ApiService.fetchStudents(); // Esto actualizaría los estudiantes si es necesario
+      
+            // Registrar el movimiento autorizado
+            const moveResponse = await axios.post(`${Config.apiURL}/authorized-move`, {
+              studentId: newStudent._id,
+              fromSeat: student?.currentSeat,
+              toSeat: seat.seatNumber,
             });
-
-            if (createStudentResponse.status === 201) {
-                const newStudent = createStudentResponse.data;
-
-                // Guardar el nuevo estudiante en AsyncStorage
-                await AsyncStorage.setItem('currentStudent', JSON.stringify(newStudent));
-
-                // Registrar el movimiento autorizado
-                const moveResponse = await axios.post(`${Config.apiURL}/authorized-move`, {
-                    studentId: newStudent._id,
-                    fromSeat: student?.currentSeat,
-                    toSeat: seat.seatNumber,
-                });
-
-                if (moveResponse.status === 200) {
-                    setStudent(newStudent);
-                    setSeat(prev => ({ ...prev, isOccupied: true }));
-
-                    // Guardar en AsyncStorage que este asiento está ocupado
-                    const storedSeats = await AsyncStorage.getItem("occupiedSeats");
-                    const occupiedSeats = storedSeats ? JSON.parse(storedSeats) : {};
-                    occupiedSeats[seat.seatNumber] = newStudent;
-                    await AsyncStorage.setItem("occupiedSeats", JSON.stringify(occupiedSeats));
-
-                    Alert.alert(
-                        "Asiento ocupado",
-                        `El asiento ha sido ocupado por ${newStudent.name}.`,
-                        [{ text: "OK", onPress: () => {} }]
-                    );
-                }
+      
+            if (moveResponse.status === 200) {
+              setStudent(newStudent);
+              setSeat(prev => ({ ...prev, isOccupied: true }));
+      
+              Alert.alert(
+                "Asiento ocupado",
+                `El asiento ha sido ocupado por ${newStudent.name}.`,
+                [{ text: "OK", onPress: () => {} }]
+              );
             }
+          }
         } catch (error) {
-            Alert.alert("Error", "No se pudo ocupar el asiento. Intenta de nuevo.");
-            console.error('Error al ocupar asiento:', error);
+          Alert.alert("Error", "No se pudo ocupar el asiento. Intenta de nuevo.");
+          console.error('Error al ocupar asiento:', error);
         } finally {
-            setIsLoading(false);
+          setIsLoading(false);
         }
-    };
-
+      };
+      const deleteStudent = async (studentId : any) => {
+        try {
+          const response = await axios.delete(`${Config.apiURL}/students`);
+          if (response.status === 200) {
+            Alert.alert("Éxito", "Estudiante eliminado exitosamente.");
+          }
+        } catch (error) {
+          console.error('Error al eliminar estudiante:', error);
+          Alert.alert("Error", "No se pudo eliminar el estudiante.");
+        }
+      };
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Detalles del Asiento {seat.seatNumber + 1}</Text>

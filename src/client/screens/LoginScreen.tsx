@@ -3,7 +3,6 @@ import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { loginStyles as styles } from '../styles/loginStyles';
 import { ApiService } from '../services/apiService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [username, setUsername] = useState('');
