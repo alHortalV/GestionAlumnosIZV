@@ -1,7 +1,7 @@
 // SeatComponent.tsx
 
 import React from 'react';
-import {TouchableOpacity, Text, Image, ActivityIndicator} from 'react-native';
+import {TouchableOpacity, Text, Image, ActivityIndicator, View} from 'react-native';
 import {Seat, Student} from '../../client/types/types';
 import {useSeat} from '../hooks/useSeat';
 import {seatStyles as styles} from '../styles/seatStyles';
@@ -14,10 +14,10 @@ interface SeatComponentProps {
 
 export const SeatComponent: React.FC<SeatComponentProps> = ({
   seat,
-  student,
+
   onPress,
 }) => {
-  const {modalVisible, setModalVisible, loading, handlePress} = useSeat();
+  const { loading, handlePress} = useSeat();
 
   const seatImage = seat.isOccupied
     ? require('../../assets/images/asientoOcupado.jpg')
@@ -32,11 +32,11 @@ export const SeatComponent: React.FC<SeatComponentProps> = ({
       {loading ? (
         <ActivityIndicator size="small" color="#000" />
       ) : (
-        <>
-          <Image source={seatImage} style={styles.seatImage} />{' '}
+        <View>
+          <Image source={seatImage} style={styles.seatImage} />
           <Text
-            style={styles.text}>{`Asiento ${seat.seatNumber + 1}`}</Text>{' '}
-        </>
+            style={styles.text}>{`Asiento ${seat.seatNumber + 1}`}</Text>
+        </View>
       )}
     </TouchableOpacity>
   );

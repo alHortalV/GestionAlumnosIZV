@@ -8,16 +8,16 @@ function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> })
 
     if (loading) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView>
                 <ActivityIndicator size="large" color="#0000ff" />
             </SafeAreaView>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView>
             {error ? (
-                <Text style={styles.error}>{error}</Text>
+                <Text>{error}</Text>
             ) : (
                 <ScrollView>
                     <ClassroomGrid
@@ -31,16 +31,6 @@ function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> })
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    error: {
-        color: 'red',
-        textAlign: 'center',
-        margin: 20,
-    },
-});
+
 
 export default SelectedSeatScreen;

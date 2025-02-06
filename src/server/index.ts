@@ -16,16 +16,13 @@ const io = new Server(server, {
   }
 });
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Conectar a MongoDB
 connectDB();
 
 app.use('/api/auth', router);
 
-// Inicializar asientos si no existen
 async function initializeSeats() {
   try {
     const count = await Seat.countDocuments();
@@ -61,7 +58,6 @@ app.get('/api/students', async (req, res) => {
   }
 });
 
-// Ruta para añadir un nuevo estudiante
 app.post('/api/students', async (req, res) => {
   try {
       const { name, assignedSeat } = req.body;
@@ -72,32 +68,28 @@ app.post('/api/students', async (req, res) => {
       });
       await student.save();
 
-      // Actualizar el asiento asignado
       await Seat.findOneAndUpdate(
           { seatNumber: assignedSeat },
           { isOccupied: true, studentId: student._id }
       );
 
       io.emit('student-added', student);
-      res.status(201).json(student); // Devuelve el estudiante creado
+      res.status(201).json(student);
   } catch (error) {
       res.status(500).json({ message: 'Error añadiendo estudiante' });
   }
 });
 
-// Ruta para registrar movimiento no autorizado
 app.post('/api/authorized-move', async (req, res) => {
   try {
     const { studentId, fromSeat, toSeat } = req.body;
 
-    // Actualizar la posición actual del estudiante
     const student = await Student.findByIdAndUpdate(
-      studentId,         // El ID del estudiante que queremos actualizar
-      { currentSeat: toSeat },  // El nuevo valor que queremos establecer
-      { new: true }      // Opción para devolver el documento actualizado
+      studentId,
+      { currentSeat: toSeat },
+      { new: true }
     );
 
-    // Actualizar los asientos
     await Promise.all([
       Seat.findOneAndUpdate(
         { seatNumber: fromSeat },
@@ -116,7 +108,6 @@ app.post('/api/authorized-move', async (req, res) => {
   }
 });
 
-// Socket.IO para actualizaciones en tiempo real
 io.on('connection', (socket) => {
   console.log('Cliente conectado');
 
@@ -125,7 +116,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Inicializar servidor
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   console.log(`Servidor ejecutándose en el puerto ${PORT}`);
