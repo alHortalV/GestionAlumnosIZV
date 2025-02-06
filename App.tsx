@@ -28,12 +28,28 @@ const App = () => {
                     <Stack.Screen
                         name="Asientos"
                         component={SelectedSeatScreen}
-                        options={({ title: 'Selección de Asientos' })}
+                        options={({
+                            title: 'Selección de Asientos', headerStyle: {
+                                backgroundColor: '#7aacb3',
+                            },
+                            headerTintColor: '#fff',
+                            headerTitleStyle: {
+                                fontWeight: 'bold',
+                            },
+                        })}
                     />
                     <Stack.Screen
                         name="Detalles"
                         component={SeatDetailScreen}
-                        options={({ title: 'Detalles del Asiento' })}
+                        options={({
+                            title: 'Detalles del Asiento', headerStyle: {
+                                backgroundColor: '#7aacb3',
+                            },
+                            headerTintColor: '#fff',
+                            headerTitleStyle: {
+                                fontWeight: 'bold',
+                            },
+                        })}
                     />
                 </Stack.Navigator>
             </NavigationContainer>

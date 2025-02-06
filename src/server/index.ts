@@ -39,7 +39,6 @@ async function initializeSeats() {
   }
 }
 
-// Rutas API
 app.get('/api/seats', async (req, res) => {
   try {
     const seats = await Seat.find().populate('studentId');
@@ -60,23 +59,23 @@ app.get('/api/students', async (req, res) => {
 
 app.post('/api/students', async (req, res) => {
   try {
-      const { name, assignedSeat } = req.body;
-      const student = new Student({
-          name,
-          assignedSeat,
-          currentSeat: assignedSeat
-      });
-      await student.save();
+    const { name, assignedSeat } = req.body;
+    const student = new Student({
+      name,
+      assignedSeat,
+      currentSeat: assignedSeat
+    });
+    await student.save();
 
-      await Seat.findOneAndUpdate(
-          { seatNumber: assignedSeat },
-          { isOccupied: true, studentId: student._id }
-      );
+    await Seat.findOneAndUpdate(
+      { seatNumber: assignedSeat },
+      { isOccupied: true, studentId: student._id }
+    );
 
-      io.emit('student-added', student);
-      res.status(201).json(student);
+    io.emit('student-added', student);
+    res.status(201).json(student);
   } catch (error) {
-      res.status(500).json({ message: 'Error añadiendo estudiante' });
+    res.status(500).json({ message: 'Error añadiendo estudiante' });
   }
 });
 

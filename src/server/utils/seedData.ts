@@ -10,7 +10,6 @@ async function seedData() {
       Seat.deleteMany({})
     ]);
 
-    // Crear asientos
     const seats = Array.from({ length: 25 }, (_, index) => ({
       seatNumber: index,
       isOccupied: false
