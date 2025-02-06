@@ -30,6 +30,7 @@ function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> })
         </SafeAreaView>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -41,4 +42,5 @@ const styles = StyleSheet.create({
         margin: 20,
     },
 });
+
 export default SelectedSeatScreen;

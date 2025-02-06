@@ -1,23 +1,22 @@
+// seatStyles.ts
+
 import { StyleSheet } from 'react-native';
 
 export const seatStyles = StyleSheet.create({
   seat: {
-    width: 100,
-    height: 100,
-    margin: 5,
-    backgroundColor: '#e0e0e0',
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 8,
+    margin: 5,
   },
-  occupied: {
-    backgroundColor: '#90EE90',
-  },
-  wrongSeat: {
-    backgroundColor: '#FFB6C1',
+  seatImage: {
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
   },
   text: {
-    textAlign: 'center',
-    fontSize: 14,
+    marginTop: 5,
+    color: 'black',
   },
 });

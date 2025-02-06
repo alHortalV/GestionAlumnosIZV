@@ -19,18 +19,14 @@ const SeatDetailScreen = ({ route, navigation }: SeatDetailScreenProps) => {
     const [student, setStudent] = useState<Student | null>(initialStudent ?? null);
     const [studentName, setStudentName] = useState<string>("");
 
-    // Cargar estado del asiento al abrir la pantalla
     useEffect(() => {
         const loadSeatData = async () => {
           try {
-            // Recuperar los estudiantes desde el servidor
             const students = await ApiService.fetchStudents();
       
-            // Aquí verificamos si un estudiante está asignado a este asiento
             const studentInSeat = students.find(student => student.currentSeat === seat.seatNumber);
       
             if (studentInSeat) {
-              // Si el asiento está ocupado, actualizamos el estado
               setStudent(studentInSeat);
               setSeat(prev => ({ ...prev, isOccupied: true }));
             }
@@ -52,7 +48,6 @@ const SeatDetailScreen = ({ route, navigation }: SeatDetailScreenProps) => {
         try {
           setIsLoading(true);
       
-          // Crear el estudiante con el nombre ingresado
           const createStudentResponse = await axios.post(`${Config.apiURL}/students`, {
             name: studentName,
             assignedSeat: seat.seatNumber,
@@ -61,10 +56,8 @@ const SeatDetailScreen = ({ route, navigation }: SeatDetailScreenProps) => {
           if (createStudentResponse.status === 201) {
             const newStudent = createStudentResponse.data;
       
-            // Actualizar el estudiante en el backend
-            await ApiService.fetchStudents(); // Esto actualizaría los estudiantes si es necesario
+            await ApiService.fetchStudents();
       
-            // Registrar el movimiento autorizado
             const moveResponse = await axios.post(`${Config.apiURL}/authorized-move`, {
               studentId: newStudent._id,
               fromSeat: student?.currentSeat,
@@ -87,17 +80,6 @@ const SeatDetailScreen = ({ route, navigation }: SeatDetailScreenProps) => {
           console.error('Error al ocupar asiento:', error);
         } finally {
           setIsLoading(false);
-        }
-      };
-      const deleteStudent = async (studentId : any) => {
-        try {
-          const response = await axios.delete(`${Config.apiURL}/students`);
-          if (response.status === 200) {
-            Alert.alert("Éxito", "Estudiante eliminado exitosamente.");
-          }
-        } catch (error) {
-          console.error('Error al eliminar estudiante:', error);
-          Alert.alert("Error", "No se pudo eliminar el estudiante.");
         }
       };
     return (

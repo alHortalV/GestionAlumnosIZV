@@ -131,29 +131,3 @@ server.listen(PORT, async () => {
   console.log(`Servidor ejecutándose en el puerto ${PORT}`);
   await initializeSeats();
 });
-
-app.delete('/api/students', async (req, res) => {
-  try {
-    // Obtener todos los estudiantes
-    const students = await Student.find();
-
-    // Liberar los asientos asignados a los estudiantes
-    const seatUpdates = students.map(student =>
-      Seat.findOneAndUpdate(
-        { seatNumber: student.assignedSeat },
-        { isOccupied: false, studentId: null }
-      )
-    );
-
-    // Ejecutar todas las actualizaciones de los asientos
-    await Promise.all(seatUpdates);
-
-    // Eliminar todos los estudiantes
-    await Student.deleteMany({});
-
-    io.emit('all-students-deleted');
-    res.json({ message: 'Todos los estudiantes han sido eliminados y los asientos han sido liberados' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al eliminar estudiantes', error });
-  }
-});

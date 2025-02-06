@@ -16,7 +16,12 @@ export const ClassroomGrid: React.FC<ClassroomGridProps> = ({ seats, students, o
       {seats
         .sort((a, b) => a.seatNumber - b.seatNumber)
         .map((seat) => (
-          <SeatComponent key={seat._id} seat={seat} student={students.find((s) => s._id === seat.studentId)} onPress={() => onSeatPress(seat.seatNumber)} />
+          <SeatComponent
+            key={seat._id}
+            seat={seat}
+            student={students.find((s) => s._id === seat.studentId)}
+            onPress={() => onSeatPress(seat.seatNumber)}
+          />
         ))}
     </View>
   );
