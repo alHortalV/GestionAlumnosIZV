@@ -1,51 +1,51 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { loginStyles as styles } from '../styles/loginStyles';
-import { ApiService } from '../services/apiService';
+import { useLogin } from '../hooks/useLogin';
 
 const LoginScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleLogin = async () => {
-    try {
-      const response = await ApiService.login(username, password);
-      if (response.user) {
-        Alert.alert('Éxito', 'Inicio de sesión exitoso');
-        navigation.navigate('Asientos');
-      } else {
-        Alert.alert('Error', response.message || 'Credenciales incorrectas');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Error al iniciar sesión. Inténtalo de nuevo.');
-      console.error('Error al iniciar sesión:', error);
-    }
-  };
-
+  const {
+    username, setUsername,
+    password, setPassword,
+    handleLogin
+  } = useLogin(navigation);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Iniciar Sesión</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre de usuario"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="Iniciar Sesión" onPress={handleLogin} />
-      <Button title="Registrarse" onPress={() => navigation.navigate('Register')} />
-    </View>
+    <ImageBackground
+      source={require('../../assets/images/fondoAuth.jpg')}
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Bienvenid@</Text>
+        <Text style={styles.subtitle}>Inicia sesión para continuar</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Usuario"
+          placeholderTextColor="#999"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor="#999"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerText}>¿No tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text></Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
-
 
 
 export default LoginScreen;

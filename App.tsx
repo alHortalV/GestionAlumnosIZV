@@ -15,10 +15,26 @@ const App = () => {
         <ClassroomProvider>
             <NavigationContainer>
                 <Stack.Navigator initialRouteName="Login">
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="Register" component={RegisterScreen} />
-                    <Stack.Screen name="Asientos" component={SelectedSeatScreen}/>
-                    <Stack.Screen name="Detalles" component={SeatDetailScreen} />
+                    <Stack.Screen
+                        name="Login"
+                        component={LoginScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="Register"
+                        component={RegisterScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="Asientos"
+                        component={SelectedSeatScreen}
+                        options={({ title: 'Selección de Asientos' })}
+                    />
+                    <Stack.Screen
+                        name="Detalles"
+                        component={SeatDetailScreen}
+                        options={({ title: 'Detalles del Asiento' })}
+                    />
                 </Stack.Navigator>
             </NavigationContainer>
         </ClassroomProvider>

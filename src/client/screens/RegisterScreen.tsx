@@ -1,62 +1,59 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, Alert } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { registerStyles as styles } from '../styles/registerStyles';
-import { ApiService } from '../services/apiService';
-
+import { useRegister } from '../hooks/useRegister';
 const RegisterScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const handleRegister = async () => {
-    try {
-      const response = await ApiService.register(username, password);
-      if (response.user) {
-        Alert.alert(
-          "Iniciar Sesión",
-          "Registro correcto. Inicia sesión para acceder",
-          [{ text: "OK", onPress: () => {} }]
-        );
-      } else {
-        Alert.alert(
-          "Registro",
-          "Registro incorrecto",
-          [{ text: "OK", onPress: () => {} }]
-        );
-      }
-    } catch (error) {
-      console.error("Error al iniciar sesión", error);
-    }
-  };
+  const {
+    username, setUsername,
+    password, setPassword,
+    confirmPassword, setConfirmPassword,
+    handleRegister,
+  } = useRegister(navigation);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrarse</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre de usuario"
-        value={username}
-        onChangeText={setUsername}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar Contraseña"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <Button title="Registrarse" onPress={handleRegister} />
-      <Button title="Iniciar Sesión" onPress={() => navigation.navigate('Login')} />
-    </View>
+    <ImageBackground
+      source={require('../../assets/images/fondoAuth.jpg')}
+      style={styles.background}
+    >
+      <View style={styles.container}>
+        <Text style={styles.title}>Registrarse</Text>
+        <Text style={styles.subtitle}>Crea una cuenta para continuar</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre de usuario"
+          placeholderTextColor="#999"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          placeholderTextColor="#999"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirmar Contraseña"
+          placeholderTextColor="#999"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+          <Text style={styles.registerButtonText}>Registrarse</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.loginText}>¿Ya tienes una cuenta? <Text style={styles.loginLink}>Inicia Sesión</Text></Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
   );
 };
 
