@@ -12,10 +12,8 @@ interface SeatComponentProps {
 
 export const SeatComponent: React.FC<SeatComponentProps> = ({
   seat,
-
   onPress,
-}) => {
-  const { loading, handlePress } = useSeat();
+}) => { const { loading, handlePress } = useSeat();
 
   const seatImage = seat.isOccupied
     ? require('../../assets/images/pupitreOcupado.png')

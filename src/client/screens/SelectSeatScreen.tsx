@@ -2,6 +2,7 @@ import { SafeAreaView, ActivityIndicator, Text, StyleSheet, ScrollView } from "r
 import ClassroomGrid from "../components/ClassroomGrid";
 import { useClassroomData } from "../hooks/useLoadData";
 import { NavigationProp } from "@react-navigation/native";
+import { FlatList } from "react-native-gesture-handler";
 
 function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> }) {
     const { students, seats, loading, error, handleSeatPress } = useClassroomData();
@@ -19,17 +20,22 @@ function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> })
             {error ? (
                 <Text>{error}</Text>
             ) : (
-                <ScrollView>
-                    <ClassroomGrid
-                        seats={seats}
-                        students={students}
-                        onSeatPress={(seatNumber) => handleSeatPress(seatNumber, navigation)}
-                    />
-                </ScrollView>
+                <FlatList
+                    data={seats} 
+                    keyExtractor={(item) => item.seatNumber.toString()}
+                    renderItem={({ item }) => (
+                        <ClassroomGrid
+                            seats={[item]}
+                            students={students}
+                            onSeatPress={(seatNumber) => handleSeatPress(seatNumber, navigation)}
+                        />
+                    )}
+                />
             )}
         </SafeAreaView>
     );
 };
+
 
 
 
