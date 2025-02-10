@@ -51,5 +51,27 @@ export const api = {
       body: JSON.stringify(data),
     });
     return response.json();
-  }
+  },
+
+  async vacateSeat(studentId: string, seatNumber: number) {
+    const response = await fetch(`${Config.apiURL}/students/${studentId}/vacate`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ seatNumber }),
+    });
+    return response.json();
+  },
+
+  async removeStudent(studentId: string) {
+    const response = await fetch(`${Config.apiURL}/remove-student`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ studentId }),
+    });
+    return response.json();
+  },
 };

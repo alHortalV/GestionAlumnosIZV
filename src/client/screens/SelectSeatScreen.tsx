@@ -1,42 +1,62 @@
-import { SafeAreaView, ActivityIndicator, Text, StyleSheet, ScrollView } from "react-native";
-import ClassroomGrid from "../components/ClassroomGrid";
-import { useClassroomData } from "../hooks/useLoadData";
-import { NavigationProp } from "@react-navigation/native";
-import { FlatList } from "react-native-gesture-handler";
+import React from 'react';
+import { SafeAreaView, ActivityIndicator, Text} from 'react-native';
+import ClassroomGrid from '../components/ClassroomGrid';
+import { useClassroomData } from '../hooks/useLoadData';
+import { NavigationProp } from '@react-navigation/native';
+import { FlatList} from 'react-native';
+import { Seat, Student } from '../../client/types/types';
 
-function SelectedSeatScreen({ navigation }: { navigation: NavigationProp<any> }) {
+interface SelectedSeatScreenProps {
+    navigation: NavigationProp<any>;
+}
+
+interface Data {
+    seats: Seat[];
+    students: Student[];
+}
+
+function SelectedSeatScreen({ navigation }: SelectedSeatScreenProps) {
     const { students, seats, loading, error, handleSeatPress } = useClassroomData();
 
     if (loading) {
         return (
-            <SafeAreaView>
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#0000ff" />
             </SafeAreaView>
         );
     }
 
-    return (
-        <SafeAreaView>
-            {error ? (
+    if (error) {
+        return (
+            <SafeAreaView>
                 <Text>{error}</Text>
-            ) : (
-                <FlatList
-                    data={seats} 
-                    keyExtractor={(item) => item.seatNumber.toString()}
-                    renderItem={({ item }) => (
-                        <ClassroomGrid
-                            seats={[item]}
-                            students={students}
-                            onSeatPress={(seatNumber) => handleSeatPress(seatNumber, navigation)}
-                        />
-                    )}
-                />
-            )}
+            </SafeAreaView>
+        );
+    }
+    const numberSeats = 30;
+    const data: Data[] = [];
+
+    for (let i = 0; i < seats.length; i += numberSeats) {
+        const rowSeats = seats.slice(i, i + numberSeats);
+        const rowStudents = students.filter(student => rowSeats.some(seat => seat._id === student._id));
+        data.push({ seats: rowSeats, students: rowStudents });
+    }
+
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <FlatList
+                data={data}
+                keyExtractor={(_, index) => index.toString()}
+                renderItem={(item) => (
+                    <ClassroomGrid
+                        seats={item.item.seats}
+                        students={item.item.students}
+                        onSeatPress={(seatNumber) => handleSeatPress(seatNumber, navigation)}
+                    />
+                )}
+            />
         </SafeAreaView>
     );
-};
-
-
-
+}
 
 export default SelectedSeatScreen;

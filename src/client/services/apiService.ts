@@ -29,4 +29,12 @@ export class ApiService {
   }) {
     return await api.authorizeMove(data);
   }
+
+  static async removeStudent(studentId: string): Promise<any> { // Added
+    return await api.removeStudent(studentId);
+  }
+
+  static async vacateSeat(studentId: string, seatNumber: number): Promise<any> { // Added
+    return await api.vacateSeat(studentId, seatNumber);
+  }
 }

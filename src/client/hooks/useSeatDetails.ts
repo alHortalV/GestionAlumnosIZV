@@ -58,6 +58,31 @@ export const useSeatDetails = (initialSeat: Seat, initialStudent: Student | null
         }
     };
 
+    const handleVacateSeat = async (studentId: string) => {
+        if (!student) {
+            Alert.alert('Error', 'No hay ningún estudiante en este asiento.');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            await ApiService.authorizeMove({
+                studentId: student._id,
+                fromSeat: seat.seatNumber,
+                toSeat: -1
+            });
+            await ApiService.removeStudent(studentId);
+            setStudent(null);
+            setSeat(prev => ({ ...prev, isOccupied: false }));
+
+            Alert.alert('Asiento desocupado', `El asiento ha sido desocupado.`);
+        } catch (error) {
+            Alert.alert('Error', 'No se pudo desocupar el asiento. Intenta de nuevo.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return {
         isLoading,
         seat,
@@ -65,5 +90,6 @@ export const useSeatDetails = (initialSeat: Seat, initialStudent: Student | null
         studentName,
         setStudentName,
         handleOccupySeat,
+        handleVacateSeat,
     };
 };

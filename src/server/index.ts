@@ -106,6 +106,31 @@ app.post('/api/authorized-move', async (req, res) => {
     res.status(500).json({ message: 'Error registrando movimiento' });
   }
 });
+app.post('/api/remove-student', async (req, res) => {
+  try {
+    const { studentId } = req.body;
+
+    const student = await Student.findById(studentId);
+
+    if (student) {
+      const { currentSeat } = student;
+
+      await Promise.all([
+        Seat.findOneAndUpdate(
+          { seatNumber: currentSeat },
+          { isOccupied: false, studentId: null }
+        ),
+        Student.findByIdAndDelete(studentId)
+      ]);
+
+      io.emit('student-removed', { studentId, seatNumber: currentSeat });
+
+      res.json({ success: true, message: 'Estudiante eliminado y asiento liberado' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error eliminando estudiante' });
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('Cliente conectado');
