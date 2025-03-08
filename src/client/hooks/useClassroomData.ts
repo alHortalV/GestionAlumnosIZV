@@ -4,13 +4,20 @@ import { Config } from "../../config/Config";
 import { ApiService } from "../services/apiService";
 import { Seat, Student } from "../types/types";
 import { NavigationProp } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../contexts/store";
+import { setSeats } from "../contexts/slices/seatsSlice";
+import { addStudent, setStudents } from "../contexts/slices/studentsSlice";
 
 
 export const useClassroomData = () => {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [seats, setSeats] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+
+  // Obtiene los datos de Redux
+  const students = useSelector((state: RootState) => state.students.students);
+  const seats = useSelector((state: RootState) => state.seats.seats);
 
   useEffect(() => {
     const socketClient = io(Config.socketURL);
@@ -23,7 +30,7 @@ export const useClassroomData = () => {
     return () => {
       socketClient.disconnect();
     };
-  }, []);
+  }, [dispatch]);
 
   const loadInitialData = async () => {
     try {
@@ -32,8 +39,8 @@ export const useClassroomData = () => {
         ApiService.fetchSeats(),
         ApiService.fetchStudents(),
       ]);
-      setSeats(seatsData);
-      setStudents(studentsData);
+      dispatch(setSeats(seatsData));
+      dispatch(setStudents(studentsData));
       setError(null);
     } catch (err) {
       setError("Error cargando los datos. Por favor, intente más tarde.");
@@ -47,19 +54,18 @@ export const useClassroomData = () => {
   };
 
   const handleStudentAdded = (newStudent: Student) => {
-    setStudents((prev) => [...prev, newStudent]);
+    dispatch(addStudent(newStudent));
     loadInitialData();
   };
 
   const handleSeatPress = (seatNumber: number, navigation: NavigationProp<any>) => {
-    const seat = seats.find((s) => s.seatNumber === seatNumber);
+    const seat = seats.find((s: { seatNumber: number; }) => s.seatNumber === seatNumber);
     if (!seat) return;
 
-    const student = students.find((s) => s._id === seat.studentId);
+    const student = students.find((s: { _id: any; }) => s._id === seat.studentId);
 
     navigation.navigate("Detalles", { seat, student });
-};
-
+  };
 
   return { students, seats, loading, error, handleSeatPress };
 };

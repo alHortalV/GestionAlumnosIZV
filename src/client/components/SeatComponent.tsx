@@ -10,10 +10,8 @@ interface SeatComponentProps {
   onPress: () => void;
 }
 
-export const SeatComponent: React.FC<SeatComponentProps> = ({
-  seat,
-  onPress,
-}) => { const { loading, handlePress } = useSeat();
+export const SeatComponent: React.FC<SeatComponentProps> = ({ seat, onPress }) => {
+  const { loading, handlePress } = useSeat();
 
   const seatImage = seat.isOccupied
     ? require('../../assets/images/pupitreOcupado.png')
@@ -30,8 +28,7 @@ export const SeatComponent: React.FC<SeatComponentProps> = ({
       ) : (
         <View>
           <Image source={seatImage} style={styles.seatImage} />
-          <Text
-            style={styles.text}>{`Asiento ${seat.seatNumber + 1}`}</Text>
+          <Text style={styles.text}>{`Asiento ${seat.seatNumber + 1}`}</Text>
         </View>
       )}
     </TouchableOpacity>

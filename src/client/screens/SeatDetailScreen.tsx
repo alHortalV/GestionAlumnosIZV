@@ -7,7 +7,6 @@ import {
     Button,
     View,
     TextInput,
-    Alert,
 } from 'react-native';
 import React from 'react';
 import { seatDetailsStyles as styles } from '../styles/seatDetailsStyles';

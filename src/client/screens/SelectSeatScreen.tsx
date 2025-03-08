@@ -1,10 +1,10 @@
 import React from 'react';
 import { SafeAreaView, ActivityIndicator, Text} from 'react-native';
 import ClassroomGrid from '../components/ClassroomGrid';
-import { useClassroomData } from '../hooks/useLoadData';
 import { NavigationProp } from '@react-navigation/native';
 import { FlatList} from 'react-native';
 import { Seat, Student } from '../../client/types/types';
+import { useClassroomData } from '../hooks/useClassroomData';
 
 interface SelectedSeatScreenProps {
     navigation: NavigationProp<any>;
@@ -38,7 +38,7 @@ function SelectedSeatScreen({ navigation }: SelectedSeatScreenProps) {
 
     for (let i = 0; i < seats.length; i += numberSeats) {
         const rowSeats = seats.slice(i, i + numberSeats);
-        const rowStudents = students.filter(student => rowSeats.some(seat => seat._id === student._id));
+        const rowStudents = students.filter((student: { _id: any; }) => rowSeats.some((seat: { _id: any; }) => seat._id === student._id));
         data.push({ seats: rowSeats, students: rowStudents });
     }
 
